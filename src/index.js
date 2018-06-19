@@ -84,6 +84,15 @@ class Game extends React.Component {
       });
     }
 
+    isTie(squares) {
+        for(let i=0;i<squares.length;i++){
+            if(squares[i]==null){
+                return false;
+            }
+        }
+        return true;
+    }
+
     reorder(){
       this.state.ascending = !this.state.ascending;
     }
@@ -109,7 +118,9 @@ class Game extends React.Component {
         let status;
         if (winner) {
           status = 'Winner: ' + winner;
-        } else {
+      } else if(this.isTie(current.squares)){
+          status = 'There has been a tie.'
+      } else {
           status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
 
@@ -159,6 +170,13 @@ function calculateWinner(squares) {
       document.getElementById(b).className="winning-square";
       document.getElementById(c).className="winning-square";
       return squares[a];
+    }
+    else{
+        for (let i = 0; i < squares.length; i++){
+            if(document.getElementById(i)!=null){
+                document.getElementById(i).className="square";
+            }
+        }
     }
   }
   return null;
