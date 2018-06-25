@@ -94,6 +94,7 @@ class Game extends React.Component {
     }
 
     reorder(){
+      console.log("reordering");
       this.state.ascending = !this.state.ascending;
     }
 
@@ -102,15 +103,25 @@ class Game extends React.Component {
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
         const order = (!this.state.ascending ? history : history.reverse());
+        var counter = 0;
+        //console.log(order);
         const moves = order.map((step, move) => {
-            const player = (move % 2) ? "X" : "O";
-            const position = history[move].position;
-            const desc = move ?
-               'Go to move #' + move + " " + player + " placed at position " + position :
+            if(this.state.ascending){
+                counter = history.length - (move+1);
+            }
+            else{
+                counter = move;
+            }
+            console.log("length:" + history.length);
+            console.log(counter);
+            const player = (counter % 2) ? "X" : "O";
+            const position = order[counter].position;
+            const desc = counter ?
+               'Go to move #' + counter + " " + player + " placed at position " + position :
                'Go to game start';
             return (
               <li key={move}>
-                 <button onClick ={() => this.jumpTo(move)}>{desc}</button>
+                 <button onClick ={() => this.jumpTo(counter)}>{desc}</button>
               </li>
             );
         });
@@ -136,7 +147,7 @@ class Game extends React.Component {
 		           <div className="game-info">
 		              <div>{status}</div>
                   <div>
-                      <button onClick={()=>{this.reorder()}}>Reoder</button>
+                      <button onClick={()=>{this.reorder()}}>Reorder</button>
                   </div>
 		              <ol>{moves}</ol>
 		           </div>
