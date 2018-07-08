@@ -14,7 +14,7 @@ class Board extends React.Component {
 
     renderSquare(i) {
         return(
-            <Square
+            <Square key={i}
                 id = {i}
                 value={this.props.squares[i]}
                 onClick={() => this.props.onClick(i)}
@@ -28,7 +28,7 @@ class Board extends React.Component {
           {
             Array.apply(null, Array(3)).map((item, i)=>{
               return (
-                <div className="board-row">
+                <div className="board-row" key={i}>
                 {
                     Array.apply(null, Array(3)).map((item, j)=>{
                         return this.renderSquare(i*3+j);
@@ -48,6 +48,7 @@ class Game extends React.Component {
       super(props);
       this.state = {
         history: [{
+          id: Math.random(10),
           squares: Array(9).fill(null),
           position: null,
         }],
@@ -68,6 +69,7 @@ class Game extends React.Component {
       this.setState({
         history: history.concat([
           {
+            id: Math.random(10),
             squares:squares,
             position:i,
           }
@@ -94,44 +96,63 @@ class Game extends React.Component {
     }
 
     reorder(){
-      console.log("reordering");
-      this.state.ascending = !this.state.ascending;
+        var ascending;
+        //var step;
+
+       if(this.state.ascending){
+           ascending = false;
+       } else{
+           ascending = true;
+       }
+      this.setState({
+          ascending: ascending,
+      });
     }
 
     render() {
-        const history = this.state.history;
-        const current = history[this.state.stepNumber];
+        var history = JSON.parse(JSON.stringify(this.state.history));
+        const current = this.state.history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
-        const order = (!this.state.ascending ? history : history.reverse());
-        var counter = 0;
-        //console.log(order);
-        const moves = order.map((step, move) => {
+        var moveNumber = 0;
+        
+        if(this.state.ascending){
+            history = history.reverse();
+        }
+        const moves = history.map((step, move) => {
             if(this.state.ascending){
-                counter = history.length - (move+1);
+                moveNumber = (this.state.history.length-1) - move;
             }
             else{
-                counter = move;
+                moveNumber = move;
             }
-            console.log("length:" + history.length);
-            console.log(counter);
-            const player = (counter % 2) ? "X" : "O";
-            const position = order[counter].position;
-            const desc = counter ?
-               'Go to move #' + counter + " " + player + " placed at position " + position :
+            
+            const player = (moveNumber % 2) ? "X" : "O";
+            const position = history[move].position;
+            const desc = moveNumber ?
+               'Go to move #' + moveNumber + " " + player + " placed at position " + position :
                'Go to game start';
-            return (
-              <li key={move}>
-                 <button onClick ={() => this.jumpTo(counter)}>{desc}</button>
-              </li>
-            );
+            if(this.state.ascending){
+                return (
+                  <li key={move}>
+                     <button onClick ={() => this.jumpTo((this.state.history.length-1) - move)}>{desc}</button>
+                  </li>
+                );
+            }
+            else{
+                return (
+                  <li key={move}>
+                     <button onClick ={() => this.jumpTo(move)}>{desc}</button>
+                  </li>
+                );
+            }
         });
 
         let status;
         if (winner) {
           status = 'Winner: ' + winner;
-      } else if(this.isTie(current.squares)){
+        } else if(this.isTie(current.squares)){
           status = 'There has been a tie.'
-      } else {
+        } else {
           status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
 
@@ -139,18 +160,20 @@ class Game extends React.Component {
 	         <div className="game">
 		           <div className="game-board">
 		               <Board
-                      squares={current.squares}
-                      onClick={i => this.handleClick(i)}
-                   />
+                        squares={current.squares}
+                        onClick={i => this.handleClick(i)}
+                      />
+		           </div>
 
-		           </div>
-		           <div className="game-info">
+                   <div className="game-info">
 		              <div>{status}</div>
-                  <div>
-                      <button onClick={()=>{this.reorder()}}>Reorder</button>
-                  </div>
-		              <ol>{moves}</ol>
-		           </div>
+                      <div>
+                        <button onClick={()=>{this.reorder()}}>Reorder</button>
+                      </div>
+		              <ul>
+                        {moves}
+                      </ul>
+		         </div>
 	         </div>
         );
     }
