@@ -14,3 +14,10 @@ The work I have done has added additional features to the base example app such 
 - Includes a toggle button which lets the user sort the moves in ascending or descending order
 - When a player wins the squares that make up the winning combination are highlighted in yellow.
 - When all squares are filled and neither player wins a message is displayed that the game is a draw.
+
+Deployment
+1. Clone (gh repo clone mark-angus-git/tictactoe) or download and extract the repo.
+2. To build the app run "npm run build" 
+2. In the base directory run "serve -s build" to run the server.
+3. If you don't already have serve, "npm install -g serve" to download and install it
+4. Once running you can access it via localhost:3000 by default 
